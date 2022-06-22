@@ -50,12 +50,26 @@ const blogs = async function(req,res){
         
     
 
-    // const authorId=req.body.author_Id
-    // let author = await authorModel.findById({authorId})
-    // if(!author)res.status(400).send("author not found")
-   
+    
+const deleteblog = async function (req, res) {
+    try {
+        let blogId = req.params.blogId;
+        let blog = await blogsModel.findById(blogId);
+        if (!blog) {
+            return res.status(404).send("No such blog exists");
+        }
+    //     //delete
+        // let blogData = req.body;
+        let deleteBlog = await blogsModel.findOneAndDelete({ _id: blogId},{$set: {isDeleted:"true"}});
+        res.status(201).send({ status: false , data: deleteBlog});
+    }
 
+    catch (error) {
+        res.status(500).send({ msg: error.message })
+    }
+}
 
 
 module.exports.blogs=blogs;
 module.exports.getBlogs=getBlogs;
+module.exports.deleteblog=deleteblog

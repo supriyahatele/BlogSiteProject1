@@ -1,0 +1,19 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "Backend cohort for Radon(May-Sep)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+
+  "dependencies": {
+    "express": "^4.18.1",
+    "moment": "^2.29.3",
+    "mongoose": "^6.4.0",
+    "nodemon": "^2.0.16"
+  }
+}
