@@ -7,9 +7,9 @@ const mid = require("../middleware/mid")
 
 router.post("/authors",authorController.authors)
 router.post("/blogs",blogsController.blogs)
-router.get("/blog",blogsController.getBlogs)
-router.delete("/blogs/:blogId",mid.authmid, blogsController.deleteblog)
-router.delete("/blogs", blogsController.deleteQuery)
+router.get("/blog",mid.authorise,mid.authmid,blogsController.getBlogs)
+router.delete("/blogs/:blogId",mid.authorise,mid.authmid, blogsController.deleteblog)
+router.delete("/blogs",mid.authorise,mid.authmid, blogsController.deleteQuery)
 router.put("/blogs/:blogId",mid.authorise,mid.authmid,blogsController.updateBlog)
 router.post("/createblog",authorController.authorLogin)
 

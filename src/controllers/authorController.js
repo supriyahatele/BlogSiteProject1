@@ -3,33 +3,33 @@ const jwt = require("jsonwebtoken");
 
 const authors= async function (req, res) {
     try{
-        let {title,fName,lName,email,password}=req.body
-        if(!title){
+        let data=req.body
+        if (Object.keys(data).length === 0) return res.status(400).send({ msg: "please provide sufficient data " })
+    
+        if(!data.title ||typeof data.title!=="string" ){
             return res.status(400).send({status:false,message:"author title is required"})
         }
-        if(!fName){ 
+        if(!data.fName || typeof data.fName!=="string"){
             return res.status(400).send({status:false,message:"author first name is required"})
         }
-        if(!lName){
+        if(!data.lName ||typeof data.lName!=="string" ){
             return res.status(400).send({status:false,message:"author last name is required"})
         }
-        if(!email){
+        if(!data.email &&data.email==""){
             return res.status(400).send({status:false,message:"author email is required"})
         }
-        if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)) {
-            res.status(400).send({status: false,message: `Email should be a valid email address`});
+        if (!/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(data.email)) {
+            res.status(400).send({status: false,message: " Email should be a valid email address"});
         }
     
-        if(!password){
+        if(!data.password && data.password ==""){
             return res.status(400).send({status:false,message:"author password is required"})
         }
-    
-        if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(password)) {
-            res.status(400).send({status: false,message: `Email should be a valid email address`});
+        if (!/^[a-zA-Z0-9_.@$#]+$/.test(data.password)) {
+            res.status(400).send({status: false,message: "Not  a strong password "});
         }
             let authorCreated =await authorModel.create(req.body)
             res.status(201).send({status:true,date:authorCreated, msg:"created"}) 
-        
         }catch (err)
         {
             return res.status(500).send({status:false,msg:err.message})
