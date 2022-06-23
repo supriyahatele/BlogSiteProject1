@@ -9,11 +9,11 @@
   },
   "author": "",
   "license": "ISC",
-
   "dependencies": {
     "express": "^4.18.1",
     "moment": "^2.29.3",
     "mongoose": "^6.4.0",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "validator": "^13.7.0"
   }
 }
