@@ -1,4 +1,5 @@
  const mongoose = require('mongoose');
+const { required } = require('nodemon/lib/config');
 const ObjectId= mongoose.Schema.Types.ObjectId;
 
 
@@ -15,12 +16,19 @@ const blogsSchema = new mongoose.Schema( {
         type:ObjectId,
         ref:"author"
     },
-   tags:[],
+   tags:{
+       type : [] ,
+       required:true
+    }
+       ,
     category:{
         type:String,
-        required:true
+        required:true,
+        unique: true
     },
-    subCategory:[],
+    subCategory:
+    {type:[],
+        require:true},
     isDeleted:{
         type:Boolean,
         default:false

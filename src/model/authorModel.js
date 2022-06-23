@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const validator = require('validator')
 
 const authorSchema = new mongoose.Schema( {
+  title:{
+    type:String,
+    required:true,
+    enum:["Mr","Mrs","Miss"]
+  },
   fName:{
     type:String,
     required:true
@@ -10,11 +15,7 @@ const authorSchema = new mongoose.Schema( {
     type:String,
     required:true
   },
-  title:{
-    type:String,
-    required:true,
-    enum:["Mr","Mrs","Miss"]
-  },
+
   email:{
     type:String,
     required:true,
