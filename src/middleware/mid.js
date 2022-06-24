@@ -7,9 +7,7 @@ const authmid = function (req, res, next) {
 
     //If no token is present in the request header return error
     if (!token)
-      return res
-        .status(400)
-        .send({ status: false, msg: "token must be present" });
+      return res.status(400).send({ status: false, msg: "token must be present" });
 
     console.log(token);
     let decodedToken = jwt.verify(token, "PROJECT-FUNCTIONUP");
@@ -28,6 +26,9 @@ const authorise = function (req, res, next) {
     let token = req.headers["X-api-key"];
   if(!token) token=req.headers["x-api-key"];
   let decodedToken=jwt.verify(token,"PROJECT-FUNCTIONUP");
+  if (!decodedToken)
+      return res.status(403).send({ status: false, msg: "token is invalid" });
+
 
     let author_ToBeModified = req.params.author_Id;
     let author_LoggedIn = decodedToken.author_Id;

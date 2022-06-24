@@ -5,15 +5,18 @@ const authorSchema = new mongoose.Schema( {
   title:{
     type:String,
     required:true,
-    enum:["Mr","Mrs","Miss"]
+    enum:["Mr","Mrs","Miss"],
+    trim:true
   },
   fName:{
     type:String,
-    required:true
+    required:true,
+    trim:true
   },
   lName:{
     type:String,
-    required:true
+    required:true,
+    trim:true
   },
 
   email:{
@@ -23,12 +26,14 @@ const authorSchema = new mongoose.Schema( {
     validate:{
       validator: validator.isEmail,
       message: '{VALUE} is not a valid email',
-      isAsync: false
+      isAsync: false,
+      trim:true
     }
     },
     password:{
         type:String,
         required:true,
+        trim:true
     },
     
    }, { timestamps: true });
