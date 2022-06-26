@@ -1,47 +1,33 @@
+const mongoose=require('mongoose');
 const jwt = require("jsonwebtoken");
+const blogsModel = require("../model/blogsModel");
 
-const authmid = function (req, res, next) {
+const authmid = async function (req, res, next) {
   try {
-    let token = req.headers["X-api-key"];
-    if (!token) token = req.headers["x-api-key"];
+    // =======================authentication=====================
 
-    //If no token is present in the request header return error
-    if (!token)
-      return res.status(400).send({ status: false, msg: "token must be present" });
-
+    let token = req.headers["x-api-key"];
+    if (!token) {
+      return res.status(400) .send({status: false,  msg: " provide the token to create a blog" });
+    }
     console.log(token);
     let decodedToken = jwt.verify(token, "PROJECT-FUNCTIONUP");
-    console.log(decodedToken);
-    if (!decodedToken)
-      return res.status(403).send({ status: false, msg: "token is invalid" });
+    if (!decodedToken) {
+      return res.status(400).send({ status: false, msg: "token is invalid" });
+    }
+    // ==============================autherization==============================
 
+    let id = req.params.blogId;
+    let findid = await blogsModel.findById(id);
+    let findauthorId = decodedToken.author_Id;
+    let checkAuthor = findid.author_Id.toString();
+    if (checkAuthor !== findauthorId)
+      return res.status(403).send({ status: false, msg: "User logged is not allowed to modifify" });  
     next();
-  } catch (error) {
-    res.status(500).send({ status: false, error: error.message });
-  }
-};
-
-const authorise = function (req, res, next) {
-  try {
-    let token = req.headers["X-api-key"];
-  if(!token) token=req.headers["x-api-key"];
-  let decodedToken=jwt.verify(token,"PROJECT-FUNCTIONUP");
-  if (!decodedToken)
-      return res.status(403).send({ status: false, msg: "token is invalid" });
-
-
-    let author_ToBeModified = req.params.author_Id;
-    let author_LoggedIn = decodedToken.author_Id;
-    if (author_ToBeModified != author_LoggedIn)
-      return res.send({
-        status: false,
-        msg: "Logged in author_ is not allowed to mofidy requsted author_ data",
-      });
-    next();
-  } catch (error) {
-    res.status(500).send({ status: false, error: error.message });
+  } catch (err) {
+    return res.status(500).send({ status: false, msg: err.message });
   }
 };
 
 module.exports.authmid = authmid;
-module.exports.authorise = authorise;
+
