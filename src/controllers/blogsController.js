@@ -96,37 +96,48 @@ const isValidString = function (value) {
 };
 
 const updateBlog = async function (req, res) {
-   try {
-    let data = req.body;
-    let blogId = req.params.blogId;
 
-    if (!Object.keys(data).length) return res.status(400).send({ status: false, msg: "input can't be empty" });
+  try {
 
-    if (!stringChecking(data.title)) return res.status(400).send({ status: false, msg: "title is Required" });
-    if (!/^[A-Za-z][^\.:]*[\.:?]$/.test(data.title)) return res.status(400).send({ status: false, msg: "Title  is not in right format" }) 
-    if (!/^[A-Za-z][^\.:]*[\.:?]$/.test(data.body)) return res.status(400).send({ status: false, msg: "Body isnot in right format" })
+    let data = req.body 
+    let blog_Id = req.params.blogId 
 
-
-    if (!stringChecking(data.body)) return res.status(400).send({ status: false, msg: "body is Required" });
-
-    if (!stringChecking(data.subCategory)) return res.status(400).send({ status: false, msg: "SubCategory is Required" });
-
-    if (!stringChecking(data.tags)) return res.status(400).send({ status: false, msg: "tags is Required" });
-     
+    if (!Object.keys(data).length) return res.status(400).send({ status: false, msg: "input can't be empty" })
     
-     let checkBlog = await blogsModel.findById(blogId);
+    if (!isValidString(data.title)) return res.status(400).send({ status: false, msg: "tags is Required" })
+
+    if (!isValidString(data.body)) return res.status(400).send({ status: false, msg: "body is Required" })
+
+    if (!isValidString(data.subCategory)) return res.status(400).send({ status: false, msg: "SubCategory is Required" })
+    if(data.subCategory){
+      let subCategory=data.subCategory
+    data.subCategory=subCategory
+    }
+
+    if (!isValidString(data.tags)) return res.status(400).send({ status: false, msg: "tags is Required" })
+    if(data.tags){
+      let tags=data.tags
+    data.tags=tags
+    }
+
+    let checkBlog = await blogsModel.findById(blog_Id)  
+
+    if(!checkBlog)return res.status(404).send({ status: false, msg: "Blog Not Found" })
+
+    if (checkBlog.isDeleted == true) return res.status(400).send({ status: false, msg: "This blog is already Deleted" })
     
 
-    if (!checkBlog)
-      return res.status(404).send({ status: false, msg: "Blog Not Found" });
+    let update = await blogsModel.findByIdAndUpdate(blog_Id,
 
-    if (checkBlog.isDeleted == true)
-      return res.status(400).send({ status: false, msg: "This blog is already Deleted" });
+      { $push:{tags:data.tags,subCategory:data.subCategory},title:data.title,body:data.body,isPublished: true, publishedAt: new Date()  },
+      
+      { new: true })
+   
+    res.status(200).send({ status: true, data: update })
 
-    let update = await blogsModel.findByIdAndUpdate(blogId, { $push: { tags: data.tags, subCategory: data.subCategory }, title: data.title, body: data.body, isPublished: true, publishedAt: Date.now() }, { new: true });
-
-    res.status(200).send({ status: true, msg:"updated successfully",data: update });
-  } catch (err) {
+  }
+  
+  catch (err) {
     res.status(500).send({ error: err.message });
   }
 };
@@ -182,46 +193,3 @@ module.exports.deleteblog = deleteblog;
 module.exports.deleteQuery = deleteQuery;
 module.exports.updateBlog = updateBlog;
 
-
-// const updateblog= async function(req,res){
-// const data = req.body
-// const blogId= req.params.blogId
-// const blog = await blogsModel.findById(blogId)
-// if (blog){
-//     if(blog.isDeleted===false){
-//         if (blog.isPublished===false){
-//             const updatedate= await blogsModel.findOneAndUpdate({
-//                 _id:blogId },{$set:{isPublished: true,publishedAt:Date.now()}},{new:true})
-
-//         const blogData= await  blogsModel.findOneAndUpdate({_id:blogId},{...data},{new:true})
-//         return res.status(200).send({status:true, data:blogData})}
-//         else {
-//             return res.status(404).send({status:false,msg:"blog not found"})
-//         }
-//     } else {
-//         res.status(404).send({status:false, msg:" blog id not found"})
-//     }
-// }
-
-//}
-// if (data.subCategory) {
-    //   let subCategory = data.subCategory.split(",").map((x) => x.trim());  
-    //   data.subCategory = subCategory;
-    //   console.log(subCategory);
-    // }
-     // if (data.tags) {
-    //   let tags = data.tags.split(",").map((x) => x.trim());
-    //   data.tags = tags;
-    // }
-
-
-    //=========
-    // let author_ToBeModified =checkBlog.author_Id;
-    // let author_LoggedIn = req.authoridtoken;
-    // //console.log(author_LoggedIn)
-    // console.log(author_ToBeModified)
-    // if (author_ToBeModified != author_LoggedIn)
-    //   return res.send({
-    //     status: false,
-    //     msg: "Logged in author_ is not allowed to mofidy requsted author_ data",
-    //   });
