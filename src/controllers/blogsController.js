@@ -81,15 +81,7 @@ const deleteblog = async function (req, res) {
 };
 
 //==============================================[update Blog]=====================================================//
-const stringChecking = function (data) {
-  if (typeof data !== 'string') {
-    return false;
-  } else if (typeof data === 'string' && data.trim().length == 0) {
-    return false;
-  } else {
-    return true;
-  }
-}
+
 const isValidString = function (value) {
   if (typeof value === "string" && value.trim().length === 0) return false;
   return true;
@@ -147,6 +139,15 @@ const updateBlog = async function (req, res) {
 
 
 //==============================================================[delete query]=================================================================
+const stringChecking = function (data) {
+  if (typeof data !== 'string') {
+    return false;
+  } else if (typeof data === 'string' && data.trim().length == 0) {
+    return false;
+  } else {
+    return true;
+  }
+}
 const deleteQuery = async function (req, res) {
    try {
     let author_Id = req.query.author_Id;

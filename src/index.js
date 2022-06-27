@@ -21,7 +21,7 @@ mongoose.connect("mongodb+srv://Krupa0521:JxGJp13b9ifxQZxP@cluster0.sshcjwm.mong
 //   }
 //   );
 
-app.use('/', route);
+app.use('/', route); 
 
 
 app.listen(process.env.PORT || 3000, function () {
