@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const { required } = require('nodemon/lib/config');
 const ObjectId = mongoose.Schema.Types.ObjectId;
-
-
 const blogsSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -24,8 +22,6 @@ const blogsSchema = new mongoose.Schema({
         required: true,
         trim: true
     }],
-
-
     category: {
         type: String,
         required: true,

@@ -167,24 +167,18 @@ const deleteQuery = async function (req, res) {
         return res.status(400).send({ status: false, msg: "Please enter the subcategory in right format...!" });
         filter.subCategory = subCategory
     }
-
-    
-    console.log(filter)
-
     let decodedToken=req.decodedToken;
-    console.log(decodedToken)
+   
     let variable=await blogsModel.find({$and: [{author_Id:decodedToken.author_Id},filter]})
     if(variable.length==0)
     return res.status(404).send({ status: false, msg: "Not authorise" });
     filter.isDeleted = false
     filter.isPublished = true
-    let filterData = await blogsModel.findOneAndUpdate( filter,
-      {$set:{ isDeleted: true }, deletedAt: new Date()},
-       { new: true })
-       console.log(filterData)
-        if (!filterData) {
+    let filterData = await blogsModel.findOneAndUpdate( filter, {$set:{ isDeleted: true }, deletedAt: new Date()}, { new: true })
+     
+      if (!filterData){
       return res.status(404).send({ status: false, msg: "Documents not found.." });
-    }
+     }
     res.status(200).send({ status: true,msg:"deleted data by query successfully", Data: filterData });
   }
    catch (err) {
