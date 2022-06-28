@@ -1,6 +1,7 @@
 const blogsModel = require("../model/blogsModel");
 const authorModel = require("../model/authorModel");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 
 
@@ -39,7 +40,7 @@ const blogs = async function (req, res) {
 
   } catch (err) {
     res.status(500).send({ status: "failed", message: err.message });
-  }l
+  }
 };
 
 //==============================================[get blog]=======================================================================
@@ -101,25 +102,17 @@ const updateBlog = async function (req, res) {
     if (!isValidString(data.body)) return res.status(400).send({ status: false, msg: "body is Required" })
 
     if (!isValidString(data.subCategory)) return res.status(400).send({ status: false, msg: "SubCategory is Required" })
-    if(data.subCategory){
-      let subCategory=data.subCategory
-    data.subCategory=subCategory
-    }
-
     if (!isValidString(data.tags)) return res.status(400).send({ status: false, msg: "tags is Required" })
-    if(data.tags){
-      let tags=data.tags
-    data.tags=tags
-    }
-
+    
+    
     let checkBlog = await blogsModel.findById(blog_Id)  
 
     if(!checkBlog)return res.status(404).send({ status: false, msg: "Blog Not Found" })
 
     if (checkBlog.isDeleted == true) return res.status(400).send({ status: false, msg: "This blog is already Deleted" })
-    
+  
 
-    let update = await blogsModel.findByIdAndUpdate(blog_Id,
+      let update = await blogsModel.findByIdAndUpdate(blog_Id,
 
       { $push:{tags:data.tags,subCategory:data.subCategory},title:data.title,body:data.body,isPublished: true, publishedAt: new Date()  },
       
@@ -149,36 +142,46 @@ const stringChecking = function (data) {
   }
 }
 const deleteQuery = async function (req, res) {
+
    try {
-    let author_Id = req.query.author_Id;
-    let category = req.query.category;
-    let tags = req.query.tags;
-    let subcategory = req.query.subcategory;
-    let filter = {}
-     if (category != undefined) {
+    // let filter = req.query;
+    
+    // if (!filter) return res.status(404).send({ status: false, Error: "please set query" })
+    let {category,subCategory,tags}=req.query
+    let filter={}
+    
+    
+    if (category != undefined) {
       if (!stringChecking(category))
         return res.status(400).send({ status: false, msg: "Please enter the category in right format...!" })
-      filter.category = category
+        filter.category = category
     }
      if (tags != undefined) {
       if (!stringChecking(tags))
         return res.status(400).send({ status: false, msg: "Please enter the tag in right format...!" });
-      filter.tags = tags
+        filter.tags = tags
     } 
 
-    if (subcategory != undefined) {
-      if (!stringChecking(subcategory))
+    if (subCategory != undefined) {
+      if (!stringChecking(subCategory))
         return res.status(400).send({ status: false, msg: "Please enter the subcategory in right format...!" });
-      filter.subcategory = subcategory
+        filter.subCategory = subCategory
     }
 
+    
+    console.log(filter)
+
+    let decodedToken=req.decodedToken;
+    console.log(decodedToken)
+    let variable=await blogsModel.find({$and: [{author_Id:decodedToken.author_Id},filter]})
+    if(variable.length==0)
+    return res.status(404).send({ status: false, msg: "Not authorise" });
     filter.isDeleted = false
     filter.isPublished = true
-    console.log(filter)
-    
-    let filterData = await blogsModel.findOneAndUpdate({ filter },
-      {$set:{ isDeleted: true }},
+    let filterData = await blogsModel.findOneAndUpdate( filter,
+      {$set:{ isDeleted: true }, deletedAt: new Date()},
        { new: true })
+       console.log(filterData)
         if (!filterData) {
       return res.status(404).send({ status: false, msg: "Documents not found.." });
     }
@@ -187,7 +190,9 @@ const deleteQuery = async function (req, res) {
    catch (err) {
     res.status(500).send({ status: false, msg: "Error", error: err.message });
   }
-}
+};
+
+
 module.exports.blogs = blogs;
 module.exports.getBlogs = getBlogs;
 module.exports.deleteblog = deleteblog;

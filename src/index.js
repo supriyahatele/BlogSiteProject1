@@ -1,11 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');//to convert data in json format
 const route = require('./router/router.js');
-const { default: mongoose } = require('mongoose');
+const mongoose  = require('mongoose');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true })); //prepares the string to be sent through the network. 
 
 
 mongoose.connect("mongodb+srv://Krupa0521:JxGJp13b9ifxQZxP@cluster0.sshcjwm.mongodb.net/Krupa0521?retryWrites=true&w=majority", {
@@ -13,13 +13,6 @@ mongoose.connect("mongodb+srv://Krupa0521:JxGJp13b9ifxQZxP@cluster0.sshcjwm.mong
 })
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
-
-// app.use (
-//     function (req, res, next) {
-//         console.log ("inside GLOBAL MW");
-//         next();
-//   }
-//   );
 
 app.use('/', route); 
 
