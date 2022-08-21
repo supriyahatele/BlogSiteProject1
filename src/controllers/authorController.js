@@ -39,7 +39,7 @@ const authors= async function (req, res) {
     }
    let email = await authorModel.findOne({email:data.email})
     if (email) {  
-       return res.status(400).send({status: false,message: "email akready exists"});
+       return res.status(400).send({status: false,message: "email already exists"});
      }
  
      if(!data.password){
@@ -73,7 +73,7 @@ const authorLogin = async function (req, res) {
       }
       let authorData = await authorModel.findOne({ email: email, password:password });
   
-      if (!authorData) return res.status(400).send({ status: false, msg: "Bad request",msg:"user not found" });
+      if (!authorData) return res.status(400).send({ status: false,msg:"user not found" });
   
       let token = jwt.sign(
         {
